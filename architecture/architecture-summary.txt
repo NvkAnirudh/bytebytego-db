@@ -1,0 +1,32 @@
+Phase 1: Data Ingestion Pipeline
+This phase focuses on gathering and preparing data.
+
+Sources: Data is ingested from sources like ByteByteGo (BBgo), Substack, and RSS feeds.
+
+Orchestration: Airflow manages a "Daily Sync" to fetch metadata.
+
+Processing: The pipeline splits into two parallel tracks:
+
+Text: Content is extracted, subjected to semantic chunking, and converted into embeddings. These are stored in a hybrid storage setup using Postgres and Weaviate (Vector DB).
+
+Images: Images are extracted and stored separately in an S3 bucket.
+
+Phase 2: RAG Core System
+This phase handles user interaction and answer generation.
+
+Interface: Users interact via a QA UI which connects to a FastAPI layer (REST Endpoints).
+
+Retrieval: The system uses LlamaIndex to perform a Hybrid Search (BM25 + Vector), followed by a re-ranking process.
+
+Context Building: A "Content Builder" aggregates the top-k chunks and citations. It also links back to the images stored in S3.
+
+Generation: An LLM Generation Layer (utilizing Ollama and prompt templates) takes this context and generates the final answer for the user.
+
+Phase 3: Observability Layer
+This phase is for monitoring and maintaining system quality.
+
+It tracks Request Logs and Traces.
+
+It handles Evaluations (specifically mentioning RAGAS) and Prompt Versioning.
+
+These functions are managed by tools like Langfuse or LangSmith.
