@@ -1,16 +1,9 @@
-from .article import Article, ArticleChunk, ArticleCreate, ArticleResponse, ChunkCreate, ChunkResponse
-from .query import FeedbackRequest, FeedbackResponse, QueryRequest, QueryResponse, Source
+from .article import Article, ArticleImage, ArticleChunk, IngestionLog, Base
 
 __all__ = [
     "Article",
+    "ArticleImage",
     "ArticleChunk",
-    "ArticleCreate",
-    "ArticleResponse",
-    "ChunkCreate",
-    "ChunkResponse",
-    "QueryRequest",
-    "QueryResponse",
-    "Source",
-    "FeedbackRequest",
-    "FeedbackResponse",
+    "IngestionLog",
+    "Base",
 ]
