@@ -1,0 +1,143 @@
+Recollect AI: AI-Powered Video Knowledge Base
+
+  Core Concept
+
+  Recollect AI is essentially "Notion for your saved videos" - a personal video knowledge base that solves a
+  universal problem: you save hundreds of videos from Instagram, YouTube, TikTok, and LinkedIn, but can never
+  find them again when you need them.
+
+  The Problem It Solves
+
+  - Platform search only works on captions (useless for visual content)
+  - No way to search by what's actually in the video
+  - Scrolling through hundreds of saved videos is tedious
+  - You remember a recipe video or tutorial but can't find it
+
+  The Solution
+
+  An AI-powered system that lets you:
+  1. Save videos from any platform with one click (via Chrome extension)
+  2. Search videos using natural language ("find that pasta recipe with cherry tomatoes")
+  3. Search by image (upload a screenshot to find similar frames)
+  4. Ask questions about video content through a chat interface
+  5. Get precise timestamps for relevant content within videos
+
+Architecture Overview
+
+  Your project has 4 main components:
+
+  1. Frontend (recollect-ui)
+
+  - Modern React + TypeScript web app with Tailwind CSS
+  - Pages: Landing, Sign In/Up, Dashboard, Video Library, Chat interface
+  - Uses TanStack Query for state management
+  - Shadcn/UI components for polished UI
+
+  2. Backend API (recollect-api)
+
+  - FastAPI server with async capabilities
+  - Groq Agent - intelligent routing system that decides when to use tools vs chat
+  - PostgreSQL for persistent data (users, videos, conversations)
+  - Redis for hot caching (active chats, sessions)
+  - Celery + RabbitMQ for async video processing jobs
+
+  3. MCP Server (recollect-mcp)
+
+  This is the brain of your AI system:
+  - Built with FastMCP (Model Context Protocol)
+  - Pixeltable - multimodal data processing pipeline
+  - Exposes AI tools:
+    - process_video - ingests and processes videos
+    - get_video_clip_from_user_query - searches by text
+    - get_video_clip_from_image - searches by image similarity
+    - ask_question_about_video - answers questions about content
+
+  4. Chrome Extension (recollect-extension)
+
+  - Manifest V3 extension
+  - LinkedIn: Injects "Save to Recollect" into native share menu
+  - Instagram/YouTube/TikTok: Auto-detects video URLs
+  - One-click save directly from browser
+
+  ---
+  How It Works: The Full Journey
+
+  Saving a Video:
+
+  User on Instagram → Clicks "Save to Recollect"
+  → Extension sends URL to API
+  → Celery task downloads video (yt-dlp)
+  → MCP server processes video:
+     • Extracts frames every second
+     • Generates CLIP embeddings (visual understanding)
+     • Extracts audio & transcribes (Whisper)
+     • Generates text embeddings from transcript
+  → Everything indexed and searchable in Pixeltable
+  → Video appears in user's library
+
+  Searching Videos:
+
+  User asks: "Find pasta recipes with cherry tomatoes"
+  → Groq Agent decides to use search tool
+  → MCP converts query to embedding
+  → Searches similar frame embeddings (visual)
+  → Searches similar transcript embeddings (speech)
+  → Returns top matches with exact timestamps
+  → User sees videos with clickable timestamps
+
+  Agentic AI Decision Making:
+
+  Your Groq Agent is sophisticated:
+  1. Routes requests - decides if query needs tools or just chat
+  2. Discovers tools from MCP server dynamically
+  3. Uses LLM (Llama models via Groq) to pick right tool
+  4. Maintains conversation memory using Redis + PostgreSQL
+  5. Formats responses using Instructor for type-safe JSON
+
+  ---
+  Tech Stack Highlights
+
+  AI/ML:
+  - Groq (Llama models) - fast inference for routing & tool use
+  - OpenAI - embeddings, Whisper transcription, CLIP vision
+  - Sentence Transformers - local embedding generation
+  - Pixeltable - multimodal data processing
+
+  Backend:
+  - FastAPI - async Python web framework
+  - Celery - distributed task queue
+  - PostgreSQL - relational database
+  - Redis - caching & session management
+  - RabbitMQ - message broker
+
+  Frontend:
+  - React 18 + TypeScript
+  - Vite - lightning-fast builds
+  - Tailwind CSS + Shadcn/UI
+  - TanStack Query - server state
+
+  Infrastructure:
+  - Docker + Docker Compose - containerization
+  - Opik - LLM observability & prompt versioning
+  - MCP Protocol - standardized AI tool communication
+
+  ---
+  Unique Technical Features
+
+  1. Multimodal Search: Searches across video frames (CLIP), audio transcripts (Whisper), and captions
+  simultaneously
+  2. Agentic Architecture: The Groq Agent autonomously decides what tools to use based on user intent
+  3. MCP Integration: Uses Model Context Protocol for standardized AI tool communication
+  4. Video Processing Pipeline: Pixeltable handles complex video processing with automatic caching and
+  incremental updates
+  5. Conversation Memory: Hybrid Redis (hot) + PostgreSQL (cold) storage for efficient memory management
+  6. Platform Agnostic: Works with Instagram, YouTube, TikTok, LinkedIn through unified download system
+
+  ---
+  Current Status
+
+  Based on the git status, you're actively developing:
+  - ✅ Chrome extension (recently fixed auth issue)
+  - ✅ Core backend infrastructure
+  - ✅ Frontend with Apple-inspired black UI
+  - 🚧 Mobile share sheet feature (planned for Days 11-13)

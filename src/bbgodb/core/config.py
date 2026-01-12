@@ -22,16 +22,24 @@ class Settings(BaseSettings):
         env_file=".env",
         env_file_encoding="utf-8",
         case_sensitive=False,
+        extra='ignore',  # Ignore extra fields from .env
     )
 
     # Application
     app_name: str = "ByteByteGo DB"
+    app_env: str = Field(default="production", description="Application environment")
     debug: bool = Field(default=False, description="Enable debug mode")
+    api_key_secret: str = Field(default="change-me-in-production", description="API key secret")
+    rate_limit_per_minute: int = Field(default=60, description="Rate limit per minute")
 
     # Database
     database_url: str = Field(
         default="postgresql://bbgodb:bbgodb_dev_password@localhost:5432/bbgodb",
         description="PostgreSQL database URL",
+    )
+    database_url_async: str = Field(
+        default="postgresql+asyncpg://bbgodb:bbgodb_dev_password@localhost:5432/bbgodb",
+        description="PostgreSQL async database URL",
     )
 
     # Weaviate

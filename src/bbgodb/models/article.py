@@ -101,7 +101,7 @@ class ArticleImage(Base):
     extracted_date = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     # Additional metadata (e.g., download path, processing errors)
-    metadata = Column(JSONB, nullable=True)
+    image_metadata = Column(JSONB, nullable=True)
 
     __table_args__ = (
         Index('idx_article_images_url', 'article_url'),
@@ -148,7 +148,7 @@ class ArticleChunk(Base):
     created_date = Column(DateTime, nullable=False, default=datetime.utcnow)
 
     # Additional metadata (e.g., section headers, context)
-    metadata = Column(JSONB, nullable=True)
+    chunk_metadata = Column(JSONB, nullable=True)
 
     __table_args__ = (
         Index('idx_chunk_article_url', 'article_url'),
